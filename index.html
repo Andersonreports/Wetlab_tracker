@@ -920,8 +920,10 @@ const GSHEET_GID = '0';
 
 async function fetchGoogleSheet(silent) {
   try {
-    const url = `https://docs.google.com/spreadsheets/d/${GSHEET_ID}/export?format=xlsx&gid=${GSHEET_GID}`;
-    const resp = await fetch(url);
+    const exportUrl = `https://docs.google.com/spreadsheets/d/${GSHEET_ID}/export?format=xlsx&gid=${GSHEET_GID}`;
+    // Google blocks direct cross-origin fetch; use corsproxy.io as a relay
+    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(exportUrl)}`;
+    const resp = await fetch(proxyUrl);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const ab = await resp.arrayBuffer();
     const binary = new Uint8Array(ab).reduce((s,b) => s + String.fromCharCode(b), '');
