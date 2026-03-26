@@ -920,14 +920,16 @@ const GSHEET_GID = '0';
 
 async function fetchGoogleSheet(silent) {
   try {
-    const exportUrl = `https://docs.google.com/spreadsheets/d/${GSHEET_ID}/export?format=xlsx&gid=${GSHEET_GID}`;
-    // Google blocks direct cross-origin fetch; use corsproxy.io as a relay
-    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(exportUrl)}`;
-    const resp = await fetch(proxyUrl);
+    // Use Google's gviz CSV endpoint — it supports CORS natively
+    const url = `https://docs.google.com/spreadsheets/d/${GSHEET_ID}/gviz/tq?tqx=out:csv&gid=${GSHEET_GID}`;
+    const resp = await fetch(url);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const ab = await resp.arrayBuffer();
-    const binary = new Uint8Array(ab).reduce((s,b) => s + String.fromCharCode(b), '');
-    rows = parseBinary(binary);
+    const csvText = await resp.text();
+    // SheetJS can parse CSV — feed it as a string workbook to reuse existing parser
+    const wb = XLSX.read(csvText, { type:'string' });
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const binary = csvText; // not used, but parseBinary expects XLSX
+    rows = parseCSVSheet(ws);
     saveToStorage(rows);
     refreshAll();
     setLivePill(true);
@@ -936,6 +938,43 @@ async function fetchGoogleSheet(silent) {
     setLivePill(false, e.message);
     if (!silent) toast('Failed to fetch Google Sheet: ' + e.message, 'err');
   }
+}
+
+function parseCSVSheet(ws) {
+  if (!ws || !ws['!ref']) return [];
+  const range = XLSX.utils.decode_range(ws['!ref']);
+  const grid = [];
+  for (let R = range.s.r; R <= range.e.r; R++) {
+    const row = [];
+    for (let C = range.s.c; C <= range.e.c; C++) {
+      const cell = ws[XLSX.utils.encode_cell({r: R, c: C})];
+      row.push(cell ? String(cell.v ?? '').trim() : '');
+    }
+    grid.push(row);
+  }
+
+  function cellVal(v) { return v == null ? '' : String(v).trim(); }
+
+  function isHeaderRow(row) {
+    const first = cellVal(row.find(c => cellVal(c) !== '') || '').toLowerCase().replace(/[\s.]/g,'');
+    return ['sno','s.no','srno','slno','no','#','serial'].includes(first);
+  }
+
+  const allRows = [];
+  let headers = null;
+
+  for (const row of grid) {
+    const nonEmpty = row.filter(c => cellVal(c) !== '');
+    if (nonEmpty.length === 0) continue;
+    if (isHeaderRow(row)) { headers = row.map(c => cellVal(c)); continue; }
+    if (!headers) continue;
+    const obj = {};
+    headers.forEach((h, i) => { obj[h] = cellVal(row[i] ?? ''); });
+    if (Object.values(obj).every(v => v === '')) continue;
+    allRows.push(obj);
+  }
+
+  return allRows.map(mapRow).filter(r => Object.values(r).some(v => v !== ''));
 }
 
 function startAutoSync() {
