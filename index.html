@@ -915,7 +915,7 @@ function parseBinary(binary) {
 let sheetTimer = null;
 const SYNC_INTERVAL = 30000; // 30 seconds
 
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwNPERvvkW4vH_ranAK-eiEY_3D2SlMQxVxZgq7dWsNPNtJlP4v3OGWu4qYeUCfxe3x/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz1L3kvdFve5flajc89OeyEEXbfZTjI5t0Kqefs70kjO9Y8_JC_fcytKp-FAqmzyOjV/exec';
 
 async function fetchGoogleSheet(silent) {
   try {
@@ -936,12 +936,6 @@ async function fetchGoogleSheet(silent) {
 function parseGrid(grid) {
   function cellVal(v) {
     if (v == null) return '';
-    // Convert ISO dates from Apps Script (e.g. "2026-12-03T18:30:00.000Z") to DD/MM/YYYY
-    // Extract date parts directly from the ISO string to avoid timezone shifts
-    if (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(v)) {
-      const [y, m, d] = v.split('T')[0].split('-');
-      return `${d}/${m}/${y}`;
-    }
     return String(v).trim();
   }
 
@@ -1303,39 +1297,20 @@ function render(key) { renderTable(key); }
 // ================================================================
 //  HELPERS
 // ================================================================
-// ── Date formatter → DD Mon YYYY (e.g. "03 Dec 2026") ──
-const _MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+// ── Date formatter → DD-MM-YYYY ──
+// Just normalizes separators (/ → -) and expands YY → YYYY. No reinterpretation.
 function fmtDate(v) {
   if (!v) return '—';
   const s = String(v).trim();
   if (s === '-' || s === '—') return '—';
 
-  // Format: 12 Mar 2026
-  const mStr = s.match(/^(\d{1,2})[\s\-]+([A-Za-z]{3})[\s\-]+(\d{2,4})$/);
-  if (mStr) {
-    const d = parseInt(mStr[1], 10);
-    const mi = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'].indexOf(mStr[2].substring(0,3).toLowerCase());
-    let y = parseInt(mStr[3], 10);
-    if (y < 100) y += 2000;
-    if (mi !== -1) return `${String(d).padStart(2,'0')} ${_MONTHS[mi]} ${y}`;
-  }
-
-  // Format: DD-MM-YYYY or DD/MM/YYYY or DD-MM-YY or DD.MM.YYYY
   const parts = s.split(/[\-\/\.]/);
   if (parts.length >= 3) {
-    let d, m, y;
-    if (parts[0].length === 4) { // YYYY-MM-DD
-      y = parseInt(parts[0], 10);
-      m = parseInt(parts[1], 10) - 1;
-      d = parseInt(parts[2], 10);
-    } else { // DD-MM-YYYY
-      d = parseInt(parts[0], 10);
-      m = parseInt(parts[1], 10) - 1;
-      y = parseInt(parts[2].substring(0,4), 10);
-      if (y < 100) y += 2000;
-    }
-    if (d >= 1 && d <= 31 && m >= 0 && m <= 11 && y >= 1900)
-      return `${String(d).padStart(2,'0')} ${_MONTHS[m]} ${y}`;
+    const d = parts[0].padStart(2, '0');
+    const m = parts[1].padStart(2, '0');
+    let y = parts[2].substring(0, 4);
+    if (y.length === 2) y = String(parseInt(y, 10) + 2000);
+    return `${d}-${m}-${y}`;
   }
 
   return s;
@@ -1385,7 +1360,7 @@ function fmtRelDate(v, r) {
     
     // Avoid printing impossible days like Feb 31 by relying on Date math bounds
     const finalDate = new Date(y, m, d);
-    return `${String(finalDate.getDate()).padStart(2,'0')} ${_MONTHS[finalDate.getMonth()]} ${finalDate.getFullYear()}`;
+    return `${String(finalDate.getDate()).padStart(2,'0')}-${String(finalDate.getMonth()+1).padStart(2,'0')}-${finalDate.getFullYear()}`;
   }
   return f;
 }
