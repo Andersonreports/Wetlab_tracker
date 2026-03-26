@@ -1161,7 +1161,7 @@ function buildModalTable(data, cols) {
 }
 
 function openQModal(title, data, cols) {
-  document.getElementById('qmodal-title').innerHTML = title;
+  document.getElementById('qmodal-title').textContent = title;
   document.getElementById('qmodal-count').textContent = ` · ${data.length} record${data.length!==1?'s':''}`;
   document.getElementById('qmodal-body').innerHTML = buildModalTable(data, cols);
   document.getElementById('qmodal-backdrop').classList.add('open');
@@ -1188,7 +1188,7 @@ function openEmpModal(empName) {
     const da = parseDate(a.tat), db = parseDate(b.tat);
     return (db ? db.getTime() : 0) - (da ? da.getTime() : 0);
   });
-  openQModal(`${IC.user} ${empName}'s Reviews`, empRows, MODAL_COLS.assigned);
+  openQModal(`${empName}'s Reviews`, empRows, MODAL_COLS.assigned);
 }
 
 // ================================================================
@@ -1303,41 +1303,42 @@ function render(key) { renderTable(key); }
 // ================================================================
 //  HELPERS
 // ================================================================
-// ── Exact literal date normalization ──
-// Takes DD/MM/YY, DD.MM.YYYY, 12 Mar 2026, etc. and forces DD-MM-YYYY exactly as seen.
+// ── Date formatter → DD Mon YYYY (e.g. "03 Dec 2026") ──
+const _MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 function fmtDate(v) {
   if (!v) return '—';
   const s = String(v).trim();
-  
+  if (s === '-' || s === '—') return '—';
+
   // Format: 12 Mar 2026
   const mStr = s.match(/^(\d{1,2})[\s\-]+([A-Za-z]{3})[\s\-]+(\d{2,4})$/);
   if (mStr) {
-    const d = mStr[1].padStart(2, '0');
-    const monthStr = mStr[2].substring(0,3).toLowerCase();
-    const months = {jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
-    const m = String(months[monthStr] || 1).padStart(2,'0');
-    let y = mStr[3];
-    if (y.length === 2) {
-      const yr = parseInt(y, 10);
-      y = (yr < 100 ? yr + 2000 : yr).toString();
-    }
-    return `${d}-${m}-${y}`;
+    const d = parseInt(mStr[1], 10);
+    const mi = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'].indexOf(mStr[2].substring(0,3).toLowerCase());
+    let y = parseInt(mStr[3], 10);
+    if (y < 100) y += 2000;
+    if (mi !== -1) return `${String(d).padStart(2,'0')} ${_MONTHS[mi]} ${y}`;
   }
 
   // Format: DD-MM-YYYY or DD/MM/YYYY or DD-MM-YY or DD.MM.YYYY
   const parts = s.split(/[\-\/\.]/);
   if (parts.length >= 3) {
-    const d = parts[0].padStart(2, '0');
-    const m = parts[1].padStart(2, '0');
-    let y = parts[2].substring(0,4);
-    if (y.length === 2) {
-      const yr = parseInt(y, 10);
-      y = (yr < 100 ? yr + 2000 : yr).toString();
+    let d, m, y;
+    if (parts[0].length === 4) { // YYYY-MM-DD
+      y = parseInt(parts[0], 10);
+      m = parseInt(parts[1], 10) - 1;
+      d = parseInt(parts[2], 10);
+    } else { // DD-MM-YYYY
+      d = parseInt(parts[0], 10);
+      m = parseInt(parts[1], 10) - 1;
+      y = parseInt(parts[2].substring(0,4), 10);
+      if (y < 100) y += 2000;
     }
-    return `${d}-${m}-${y}`;
+    if (d >= 1 && d <= 31 && m >= 0 && m <= 11 && y >= 1900)
+      return `${String(d).padStart(2,'0')} ${_MONTHS[m]} ${y}`;
   }
-  
-  return s; // If it's a completely wacky string, just return it so we don't destroy info.
+
+  return s;
 }
 
 // User requested released dates use the exact same DD-MM-YYYY format
@@ -1384,9 +1385,7 @@ function fmtRelDate(v, r) {
     
     // Avoid printing impossible days like Feb 31 by relying on Date math bounds
     const finalDate = new Date(y, m, d);
-    const dd = String(finalDate.getDate()).padStart(2, '0');
-    const mm = String(finalDate.getMonth() + 1).padStart(2, '0');
-    return `${dd}-${mm}-${finalDate.getFullYear()}`;
+    return `${String(finalDate.getDate()).padStart(2,'0')} ${_MONTHS[finalDate.getMonth()]} ${finalDate.getFullYear()}`;
   }
   return f;
 }
