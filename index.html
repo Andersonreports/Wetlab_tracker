@@ -395,8 +395,81 @@
     ::-webkit-scrollbar-thumb:hover{background:var(--muted)}
 
     /* ── RESPONSIVE ── */
-    @media(max-width:900px){.stats{grid-template-columns:repeat(3,1fr)}}
-    @media(max-width:640px){.stats{grid-template-columns:1fr 1fr};.hdr{padding:12px 16px};.tabs,.main{padding-left:16px;padding-right:16px}}
+
+    /* Tablet */
+    @media(max-width:900px){
+      .stats{grid-template-columns:repeat(2,1fr)}
+      .tat-grid{grid-template-columns:1fr}
+      .emp-grid{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}
+      #qmodal{max-width:95vw;margin:10px}
+    }
+
+    /* Mobile */
+    @media(max-width:640px){
+      .hdr{padding:12px 16px;flex-direction:column;gap:10px;align-items:stretch}
+      .hdr-title{font-size:17px;text-align:center}
+      .hdr-actions{justify-content:center;flex-wrap:wrap;gap:8px}
+      .live-pill{font-size:11px;padding:4px 10px}
+      .btn{padding:7px 12px;font-size:12px}
+
+      .tabs{padding:12px 16px 0;gap:4px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+      .tabs::-webkit-scrollbar{display:none}
+      .tab{padding:8px 12px;font-size:12px;white-space:nowrap;flex-shrink:0}
+
+      .main{padding:0 12px 24px}
+      .stats{grid-template-columns:1fr 1fr;gap:10px}
+      .scard{padding:14px 16px}
+      .scard .s-val{font-size:24px}
+      .scard .s-lbl{font-size:10px}
+
+      .tat-grid{grid-template-columns:1fr;gap:12px}
+      .tat-card{padding:14px 16px}
+      .tat-item{gap:6px;padding:6px 8px}
+      .tat-item .ti-name{font-size:11px}
+      .tat-item .ti-date{width:78px;font-size:10px}
+      .tat-item .ti-days{width:68px;font-size:9.5px}
+      .tat-detail.open{gap:6px 8px}
+      .tat-chip{font-size:10.5px;padding:4px 8px}
+
+      .toolbar{gap:8px}
+      .search{min-width:100%}
+      .sel{font-size:12px;height:34px;padding:0 8px}
+
+      .tbl-wrap{border-radius:var(--rs)}
+      table{font-size:11.5px}
+      thead th{padding:9px 10px;font-size:9px}
+      td{padding:8px 10px;font-size:11.5px}
+      .long-cell{max-width:130px}
+      .col-name{max-width:130px}
+
+      .emp-grid{grid-template-columns:1fr 1fr;gap:10px}
+      .emp-card{padding:14px 16px}
+      .emp-avatar{width:34px;height:34px;font-size:15px}
+      .emp-name{font-size:13px}
+      .emp-count{font-size:11px}
+      .emp-pill{font-size:9.5px;max-width:100px}
+
+      .qgrid{grid-template-columns:1fr;gap:10px}
+      .qcard{padding:12px 14px}
+
+      #qmodal-backdrop.open{align-items:flex-end}
+      #qmodal{margin:0;border-radius:20px 20px 0 0;max-height:90vh;max-width:100%}
+      #qmodal-hdr{padding:14px 16px 12px}
+      #qmodal-body th{padding:8px 10px;font-size:9px}
+      #qmodal-body td{padding:8px 10px;font-size:11.5px}
+      #qmodal-body{overflow-x:auto}
+
+      .wcard{padding:30px 24px;border-radius:16px}
+      .w-title{font-size:18px!important}
+    }
+
+    /* Small phones */
+    @media(max-width:380px){
+      .stats{grid-template-columns:1fr}
+      .emp-grid{grid-template-columns:1fr}
+      .hdr-title{font-size:15px}
+      .tab{padding:7px 10px;font-size:11px}
+    }
   </style>
 </head>
 <body>
