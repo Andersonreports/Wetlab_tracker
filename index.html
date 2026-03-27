@@ -1538,10 +1538,10 @@ function loadFromStorage() {
 }
 
 // ================================================================
-//  PRIORITY MODAL — Yet to Start samples with TAT in next 3 months
+//  PRIORITY MODAL — Yet to Start + In Review samples with TAT in next 3 months
 // ================================================================
 let _priorityRows = [];
-const PRIORITY_COLS = ['name','test','gen_id','and_id','client','tat','bio_time'];
+const PRIORITY_COLS = ['name','test','gen_id','and_id','client','tat','pri_rev','bio_time'];
 
 function openPriorityModal() {
   const today = new Date(); today.setHours(0,0,0,0);
@@ -1549,7 +1549,8 @@ function openPriorityModal() {
   limit.setMonth(limit.getMonth() + 3);
 
   _priorityRows = rows.filter(r => {
-    if (getStatus(r) !== 'Yet to Start') return false;
+    const st = getStatus(r);
+    if (st !== 'Yet to Start' && st !== 'Ongoing') return false;
     const td = parseTatDate(r);
     if (!td) return false;
     td.setHours(0,0,0,0);
