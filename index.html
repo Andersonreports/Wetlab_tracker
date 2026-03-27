@@ -157,6 +157,60 @@
     }
     .sel:focus{outline:none;border-color:var(--pri)}
 
+    /* ── RELEASED SMART TOOLBAR ── */
+    .rel-bar{display:flex;align-items:center;gap:10px;padding-top:20px;margin-bottom:14px}
+    .rel-search-wrap{
+      flex:1;display:flex;align-items:center;gap:8px;
+      padding:0 14px;height:42px;
+      border:1.5px solid var(--bdr);border-radius:var(--rs);background:var(--ib);transition:var(--tr);cursor:text;
+    }
+    .rel-search-wrap:focus-within{border-color:var(--pri);box-shadow:0 0 0 3px rgba(79,70,229,.12)}
+    .rel-search-wrap svg{color:var(--muted);flex-shrink:0}
+    .rel-search-wrap input{border:none;background:transparent;outline:none;font-family:inherit;font-size:13px;color:var(--text);width:100%}
+    .rel-filter-toggle{
+      display:flex;align-items:center;gap:6px;padding:0 14px;height:42px;
+      border:1.5px solid var(--bdr);border-radius:var(--rs);background:var(--ib);
+      font-family:inherit;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:var(--tr);white-space:nowrap;
+    }
+    .rel-filter-toggle:hover{border-color:var(--pri);color:var(--pri)}
+    .rel-filter-toggle.active{border-color:var(--pri);color:var(--pri);background:rgba(79,70,229,.06)}
+    .rel-filter-toggle svg{transition:transform .2s ease}
+    .rel-filter-toggle.active svg{transform:rotate(180deg)}
+    .rel-filter-badge{
+      display:inline-flex;align-items:center;justify-content:center;
+      min-width:20px;height:20px;padding:0 6px;border-radius:10px;
+      font-size:11px;font-weight:700;background:rgba(79,70,229,.12);color:var(--pri);
+    }
+    .rel-filter-toggle.active .rel-filter-badge{background:var(--pri);color:#fff}
+    .rel-count-btn{
+      display:flex;align-items:center;gap:8px;padding:0 18px;height:42px;
+      border-radius:var(--rs);border:1.5px solid rgba(139,92,246,.3);
+      background:rgba(139,92,246,.08);color:#6d28d9;font-family:inherit;
+      font-size:13px;font-weight:700;cursor:default;transition:var(--tr);white-space:nowrap;
+    }
+    .rel-count-btn .rc-num{
+      min-width:28px;height:28px;padding:0 8px;border-radius:14px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:15px;font-weight:800;background:rgba(139,92,246,.18);color:#6d28d9;
+    }
+    .rel-panel{
+      display:none;padding:14px 18px;margin-bottom:14px;border-radius:var(--r);
+      border:1px solid var(--pb);background:var(--panel);backdrop-filter:blur(12px);
+      animation:fadeUp .2s ease-out;
+    }
+    .rel-panel.open{display:block}
+    .rel-panel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+    .rel-panel-item label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:5px}
+    .rel-panel-item .sel{width:100%;font-size:12px;height:36px}
+    .rel-panel-item input[type="date"]{width:100%;font-size:12px;height:36px}
+    .rel-panel-actions{display:flex;justify-content:flex-end;margin-top:12px;gap:8px}
+    .rel-clear-btn{
+      padding:6px 14px;border-radius:var(--rs);border:1px solid var(--bdr);
+      background:var(--ib);color:var(--muted);font-family:inherit;font-size:12px;
+      font-weight:600;cursor:pointer;transition:var(--tr);
+    }
+    .rel-clear-btn:hover{border-color:var(--danger);color:var(--danger)}
+
     /* ── TABLE ── */
     .tbl-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--pb)}
     table{width:100%;border-collapse:collapse;font-size:12.5px;white-space:nowrap}
@@ -486,6 +540,16 @@
       .search input{font-size:12px}
       .sel{font-size:11px;height:32px;padding:0 6px}
 
+      /* Released smart bar */
+      .rel-bar{flex-wrap:wrap;gap:8px;padding-top:14px}
+      .rel-search-wrap{min-width:100%;height:36px;padding:0 10px}
+      .rel-search-wrap input{font-size:12px}
+      .rel-filter-toggle{height:36px;font-size:11px;padding:0 10px}
+      .rel-count-btn{height:36px;font-size:11px;padding:0 12px}
+      .rel-count-btn .rc-num{min-width:24px;height:24px;font-size:13px;padding:0 6px}
+      .rel-panel-grid{grid-template-columns:1fr 1fr}
+      .rel-panel{padding:10px 12px}
+
       /* Tables */
       .tbl-wrap{border-radius:var(--rs);-webkit-overflow-scrolling:touch}
       table{font-size:11px}
@@ -651,14 +715,48 @@
 
   <!-- ══ RELEASED ══ -->
   <div id="page-released" class="page">
-    <div class="toolbar">
-      <div class="search"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" id="q-rel" placeholder="Search Sample, Analyst, Test, Gen_ID…" oninput="render('released')" /></div>
-      <select class="sel" id="f-rel-analyst" onchange="render('released')"><option value="">All Analysts</option></select>
-      <select class="sel" id="f-rel-test"    onchange="render('released')"><option value="">All Tests</option></select>
-      <select class="sel" id="f-rel-tat"     onchange="render('released')"><option value="">All TAT</option></select>
-      <select class="sel" id="f-rel-month"   onchange="render('released')"><option value="">All Months</option></select>
-      <select class="sel" id="f-rel-year"    onchange="render('released')"><option value="">All Years</option></select>
-      <input type="date" class="sel" id="f-rel-date" onchange="render('released')" title="Filter by release date" />
+    <!-- Smart search bar + count -->
+    <div class="rel-bar">
+      <div class="rel-search-wrap" onclick="this.querySelector('input').focus()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" id="q-rel" placeholder="Search Sample, Analyst, Test, Gen_ID…" oninput="render('released')" />
+      </div>
+      <button class="rel-filter-toggle" id="rel-filter-btn" onclick="toggleRelFilters()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        Filters <span class="rel-filter-badge" id="rel-active-count">0</span>
+      </button>
+      <div class="rel-count-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 00-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 012-3.95A12.88 12.88 0 0122 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 01-4 2z"/></svg>
+        Released <span class="rc-num" id="rel-count-num">0</span>
+      </div>
+    </div>
+    <!-- Collapsible filter panel -->
+    <div class="rel-panel glass" id="rel-panel">
+      <div class="rel-panel-grid">
+        <div class="rel-panel-item">
+          <label>Analyst</label>
+          <select class="sel" id="f-rel-analyst" onchange="render('released')"><option value="">All Analysts</option></select>
+        </div>
+        <div class="rel-panel-item">
+          <label>Test</label>
+          <select class="sel" id="f-rel-test" onchange="render('released')"><option value="">All Tests</option></select>
+        </div>
+        <div class="rel-panel-item">
+          <label>Month</label>
+          <select class="sel" id="f-rel-month" onchange="render('released')"><option value="">All Months</option></select>
+        </div>
+        <div class="rel-panel-item">
+          <label>Year</label>
+          <select class="sel" id="f-rel-year" onchange="render('released')"><option value="">All Years</option></select>
+        </div>
+        <div class="rel-panel-item">
+          <label>Release Date</label>
+          <input type="date" class="sel" id="f-rel-date" onchange="render('released')" />
+        </div>
+      </div>
+      <div class="rel-panel-actions">
+        <button class="rel-clear-btn" onclick="clearRelFilters()">Clear All Filters</button>
+      </div>
     </div>
     <div class="tbl-wrap glass"><div id="tbl-rel"></div></div>
     <div id="analyst-count-wrap" class="analyst-counts glass" style="display:none">
@@ -1161,7 +1259,7 @@ function refreshAll() {
   populateFilter('f-asgn-tat',      rows, 'tat');
   populateNormalizedFilter('f-rel-analyst', rel);
   populateFilter('f-rel-test',      rows, 'test');
-  populateFilter('f-rel-tat',       rows, 'tat');
+  // f-rel-tat removed — TAT filter not in released panel
   populateDateFilters('f-rel-month', 'f-rel-year', rel);
 
   // team workload + stat card subtext (grouped by primary reviewer)
@@ -1172,6 +1270,7 @@ function refreshAll() {
   renderTeamWorkload('q-active', ong);
   renderQuickCards('q-released', rel.slice(-6).reverse(), 'Released');
   renderTatAlerts();
+  updateRelCount();
 
   // re-render active table
   const active = document.querySelector('.page.active');
@@ -1348,7 +1447,7 @@ const TABLE_CFG = {
                cols:['sno','name','test','gen_id','and_id','client','tat','bio_time','rep_exp'] },
   assigned:  { status:'Ongoing',      q:'q-asgn', test:'f-asgn-test', reviewer:'f-asgn-employee', tat:'f-asgn-tat', relMonth:null,          relYear:null,
                cols:['sno','pri_rev','analyst','assign_date','name','test','gen_id','and_id','client','tat','ana_date','remark'] },
-  released:  { status:'Released',     q:'q-rel',  test:'f-rel-test',  analyst:'f-rel-analyst',  tat:'f-rel-tat',  relMonth:'f-rel-month', relYear:'f-rel-year', relDate:'f-rel-date',
+  released:  { status:'Released',     q:'q-rel',  test:'f-rel-test',  analyst:'f-rel-analyst',  tat:null,  relMonth:'f-rel-month', relYear:'f-rel-year', relDate:'f-rel-date',
                cols:['analyst_txt','name','test','gen_id','and_id','client','tat','final','rel_date','remark'] },
 };
 
@@ -1434,7 +1533,65 @@ function renderTable(key) {
   if (key === 'released') renderAnalystCounts(data);
 }
 
-function render(key) { renderTable(key); }
+function render(key) {
+  renderTable(key);
+  if (key === 'released') updateRelCount();
+}
+
+// ================================================================
+//  RELEASED — SMART FILTER BAR
+// ================================================================
+function toggleRelFilters() {
+  const panel = document.getElementById('rel-panel');
+  const btn = document.getElementById('rel-filter-btn');
+  panel.classList.toggle('open');
+  btn.classList.toggle('active');
+}
+
+function clearRelFilters() {
+  ['f-rel-analyst','f-rel-test','f-rel-month','f-rel-year'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  const dateEl = document.getElementById('f-rel-date');
+  if (dateEl) dateEl.value = '';
+  const qEl = document.getElementById('q-rel');
+  if (qEl) qEl.value = '';
+  render('released');
+}
+
+function updateRelCount() {
+  // Count active filters
+  let active = 0;
+  ['f-rel-analyst','f-rel-test','f-rel-month','f-rel-year'].forEach(id => {
+    if (document.getElementById(id)?.value) active++;
+  });
+  if (document.getElementById('f-rel-date')?.value) active++;
+  if (document.getElementById('q-rel')?.value?.trim()) active++;
+  document.getElementById('rel-active-count').textContent = active;
+
+  // Update the released count number (uses same filter logic as renderTable)
+  const cfg = TABLE_CFG.released;
+  const q        = (document.getElementById(cfg.q)?.value||'').toLowerCase();
+  const test     = document.getElementById(cfg.test)?.value||'';
+  const ana      = cfg.analyst ? (document.getElementById(cfg.analyst)?.value||'') : '';
+  const relMonth = cfg.relMonth ? (document.getElementById(cfg.relMonth)?.value||'') : '';
+  const relYear  = cfg.relYear ? (document.getElementById(cfg.relYear)?.value||'') : '';
+  const relDate  = cfg.relDate ? (document.getElementById(cfg.relDate)?.value||'') : '';
+
+  let data = rows.filter(r=>getStatus(r)==='Released');
+  if (test)     data = data.filter(r=>r.test===test);
+  if (ana)      data = data.filter(r=>normalizeAnalystName(r.analyst)===ana);
+  if (relMonth) data = data.filter(r=>{ const d=parseDate(r.rel_date); return d&&String(d.getMonth()+1)===relMonth; });
+  if (relYear)  data = data.filter(r=>{ const d=parseDate(r.rel_date); return d&&String(d.getFullYear())===relYear; });
+  if (relDate)  data = data.filter(r=>{ const d=parseDate(r.rel_date); if(!d) return false; const pick=new Date(relDate+'T00:00:00'); return d.getFullYear()===pick.getFullYear()&&d.getMonth()===pick.getMonth()&&d.getDate()===pick.getDate(); });
+  if (q)        data = data.filter(r=>
+    (r.name||'').toLowerCase().includes(q)||(r.test||'').toLowerCase().includes(q)||
+    (r.gen_id||'').toLowerCase().includes(q)||(r.and_id||'').toLowerCase().includes(q)||
+    (r.client||'').toLowerCase().includes(q)||(r.analyst||'').toLowerCase().includes(q)
+  );
+  document.getElementById('rel-count-num').textContent = data.length;
+}
 
 // ================================================================
 //  HELPERS
