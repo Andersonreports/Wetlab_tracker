@@ -616,6 +616,7 @@
   <button class="tab active" onclick="switchTab('dashboard',this)" id="t-dash"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Dashboard</button>
   <button class="tab" onclick="switchTab('yet',this)" id="t-yet"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 00-1.11-1.79l-1.78-.9A2 2 0 0115 10.76V6h1a2 2 0 000-4H8a2 2 0 000 4h1v4.76a2 2 0 01-1.11 1.79l-1.78.9A2 2 0 005 15.24z"/></svg> Yet to Start <span class="tbadge" id="b-yet">0</span></button>
   <button class="tab" onclick="switchTab('released',this)" id="t-rel"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 00-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 012-3.95A12.88 12.88 0 0122 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 01-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg> Released <span class="tbadge" id="b-rel">0</span></button>
+  <button class="tab" onclick="switchTab('overdue',this)" id="t-overdue"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Overdue <span class="tbadge" id="b-overdue" style="background:rgba(239,68,68,.18);color:#dc2626">0</span></button>
 </nav>
 
 <!-- ╔═ MAIN ═╗ -->
@@ -782,6 +783,58 @@
       </div>
     </div>
     <div class="tbl-wrap glass"><div id="tbl-rel"></div></div>
+  </div>
+
+  <!-- ══ TAT OVERDUE (all) ══ -->
+  <div id="page-overdue" class="page">
+    <!-- Smart search bar + count + download -->
+    <div class="rel-bar">
+      <div class="rel-search-wrap" onclick="this.querySelector('input').focus()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" id="q-overdue" placeholder="Search Sample, Test, Gen_ID…" oninput="renderOverdue()" />
+      </div>
+      <button class="rel-filter-toggle" id="overdue-filter-btn" onclick="toggleOverdueFilters()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        Filters <span class="rel-filter-badge" id="overdue-active-count">0</span>
+      </button>
+      <div class="rel-count-btn" style="border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.08);color:#dc2626">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Overdue <span class="rc-num" id="overdue-count-num" style="background:rgba(239,68,68,.18);color:#dc2626">0</span>
+      </div>
+      <button class="rel-filter-toggle" onclick="downloadOverdueExcel()" style="border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.08);color:#059669">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download Excel
+      </button>
+    </div>
+    <!-- Collapsible filter panel -->
+    <div class="rel-panel glass" id="overdue-panel">
+      <div class="rel-panel-grid">
+        <div class="rel-panel-item">
+          <label>Test</label>
+          <select class="sel" id="f-overdue-test" onchange="renderOverdue()"><option value="">All Tests</option></select>
+        </div>
+        <div class="rel-panel-item">
+          <label>Client</label>
+          <select class="sel" id="f-overdue-client" onchange="renderOverdue()"><option value="">All Clients</option></select>
+        </div>
+        <div class="rel-panel-item">
+          <label>Status</label>
+          <select class="sel" id="f-overdue-status" onchange="renderOverdue()">
+            <option value="">All Statuses</option>
+            <option value="Yet to Start">Yet to Start</option>
+            <option value="Ongoing">Ongoing</option>
+          </select>
+        </div>
+        <div class="rel-panel-item">
+          <label>Overdue Days</label>
+          <input type="number" class="sel" id="f-overdue-days" min="1" placeholder="Min days…" oninput="renderOverdue()" />
+        </div>
+      </div>
+      <div class="rel-panel-actions">
+        <button class="rel-clear-btn" onclick="clearOverdueFilters()">Clear All Filters</button>
+      </div>
+    </div>
+    <div class="tbl-wrap glass"><div id="tbl-overdue"></div></div>
   </div>
 
 </main>
@@ -1241,14 +1294,15 @@ function dismissWelcome() { document.getElementById('welcome').classList.remove(
 // ================================================================
 //  TAB ROUTING
 // ================================================================
-const PAGE_MAP = { dashboard:'page-dashboard', yet:'page-yet', assigned:'page-assigned', released:'page-released' };
+const PAGE_MAP = { dashboard:'page-dashboard', yet:'page-yet', assigned:'page-assigned', released:'page-released', overdue:'page-overdue' };
 
 function switchTab(id, btn) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.getElementById(PAGE_MAP[id]).classList.add('active');
   btn.classList.add('active');
-  if (id!=='dashboard') renderTable(id);
+  if (id==='overdue') renderOverdue();
+  else if (id!=='dashboard') renderTable(id);
 }
 
 // ================================================================
@@ -1270,6 +1324,10 @@ function refreshAll() {
   document.getElementById('b-yet').textContent = yet.length;
   document.getElementById('b-rel').textContent = rel.length;
 
+  // overdue badge count
+  const overdueAll = getOverdueRows();
+  document.getElementById('b-overdue').textContent = overdueAll.length;
+
   // populate filter dropdowns
   populateFilter('f-yet-test',      yet, 'test');
   populateTatDateFilters('f-yet-month', 'f-yet-year', yet);
@@ -1281,6 +1339,10 @@ function refreshAll() {
   populateFilter('f-rel-client',    rel,  'client');
   // f-rel-tat removed — TAT filter not in released panel
   populateDateFilters('f-rel-month', 'f-rel-year', rel);
+
+  // overdue filter dropdowns
+  populateFilter('f-overdue-test',   overdueAll, 'test');
+  populateFilter('f-overdue-client', overdueAll, 'client');
 
   // team workload + stat card subtext (grouped by primary reviewer)
   const empNames = [...new Set(ong.map(r=>normalizeAnalystName(r.pri_rev)).filter(Boolean))];
@@ -1295,7 +1357,9 @@ function refreshAll() {
 
   // re-render active table
   const active = document.querySelector('.page.active');
-  if (active && active.id!=='page-dashboard') {
+  if (active && active.id==='page-overdue') {
+    renderOverdue();
+  } else if (active && active.id!=='page-dashboard') {
     const key = Object.keys(PAGE_MAP).find(k=>PAGE_MAP[k]===active.id);
     if (key) renderTable(key);
   }
@@ -1490,7 +1554,7 @@ function renderTeamWorkload(containerId, data) {
 //  QUICK MODAL (employee drill-down + stat card drill-down)
 // ================================================================
 const MODAL_COLS = {
-  assigned: ['assign_date','name','test','gen_id','and_id','client','tat','ana_date'],
+  assigned: ['name','test','gen_id','and_id','client','tat','ana_date'],
 };
 
 function buildModalTable(data, cols) {
@@ -1856,6 +1920,131 @@ function updateYetCount() {
     (r.client||'').toLowerCase().includes(q)
   );
   document.getElementById('yet-count-num').textContent = data.length;
+}
+
+// ================================================================
+//  TAT OVERDUE TAB — all overdue samples (no day limit)
+// ================================================================
+const OVERDUE_COLS = ['name','test','gen_id','and_id','client','tat','_status','_overdue_days','pri_rev'];
+
+function getOverdueRows() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  return rows.filter(r => {
+    if (getStatus(r) === 'Released') return false;
+    const td = parseTatDate(r);
+    if (!td) return false;
+    td.setHours(0,0,0,0);
+    return td < today;
+  }).map(r => {
+    const td = parseTatDate(r); td.setHours(0,0,0,0);
+    const today2 = new Date(); today2.setHours(0,0,0,0);
+    const diff = Math.round((today2 - td) / 86400000);
+    return { ...r, _overdue_days: diff };
+  }).sort((a,b) => b._overdue_days - a._overdue_days);
+}
+
+function getFilteredOverdue() {
+  const q       = (document.getElementById('q-overdue')?.value||'').toLowerCase();
+  const test    = document.getElementById('f-overdue-test')?.value||'';
+  const clientF = document.getElementById('f-overdue-client')?.value||'';
+  const status  = document.getElementById('f-overdue-status')?.value||'';
+  const minDays = parseInt(document.getElementById('f-overdue-days')?.value||'0',10)||0;
+
+  let data = getOverdueRows();
+  if (test)    data = data.filter(r=>r.test===test);
+  if (clientF) data = data.filter(r=>r.client===clientF);
+  if (status)  data = data.filter(r=>getStatus(r)===status);
+  if (minDays) data = data.filter(r=>r._overdue_days>=minDays);
+  if (q)       data = data.filter(r=>
+    (r.name||'').toLowerCase().includes(q)||(r.test||'').toLowerCase().includes(q)||
+    (r.gen_id||'').toLowerCase().includes(q)||(r.and_id||'').toLowerCase().includes(q)||
+    (r.client||'').toLowerCase().includes(q)||(r.pri_rev||'').toLowerCase().includes(q)
+  );
+  return data;
+}
+
+function renderOverdue() {
+  const data = getFilteredOverdue();
+
+  // Update count
+  document.getElementById('overdue-count-num').textContent = data.length;
+
+  // Update active filter badge count
+  let active = 0;
+  ['f-overdue-test','f-overdue-client','f-overdue-status'].forEach(id => {
+    if (document.getElementById(id)?.value) active++;
+  });
+  if (document.getElementById('f-overdue-days')?.value) active++;
+  if (document.getElementById('q-overdue')?.value?.trim()) active++;
+  document.getElementById('overdue-active-count').textContent = active;
+
+  const el = document.getElementById('tbl-overdue');
+  if (!data.length) {
+    el.innerHTML = `<div class="empty"><div class="ei">${IC.search}</div><p>${getOverdueRows().length===0?'No overdue samples':'No results match your search'}</p></div>`;
+    return;
+  }
+
+  const colLabels = { ...COL_LABELS, _overdue_days:'Days Overdue' };
+  const ths = OVERDUE_COLS.map(c=>`<th>${colLabels[c]||c}</th>`).join('');
+  const trs = data.map(r=>`<tr>${OVERDUE_COLS.map(c=>{
+    const v = r[c]||'';
+    if (c==='name')    return `<td class="col-name" title="${esc(v)}">${esc(v)||'—'}</td>`;
+    if (c==='gen_id'||c==='and_id') return `<td><span class="col-mono">${esc(v)||'—'}</span></td>`;
+    if (c==='tat')     return `<td class="muted-val">${fmtDate(v)}</td>`;
+    if (c==='_status') { const st=getStatus(r); return `<td>${badgeHtml(st)}</td>`; }
+    if (c==='_overdue_days') return `<td><span style="background:rgba(239,68,68,.15);color:#b91c1c;padding:2px 8px;border-radius:6px;font-weight:600;font-size:12px">${r._overdue_days}d</span></td>`;
+    if (c==='pri_rev') return `<td>${v?`<span class="analyst-pill">${IC.user} ${esc(v)}</span>`:`<span class="muted-val">—</span>`}</td>`;
+    return `<td>${esc(v)||'—'}</td>`;
+  }).join('')}</tr>`).join('');
+
+  el.innerHTML = `<table><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table>`;
+}
+
+function toggleOverdueFilters() {
+  const panel = document.getElementById('overdue-panel');
+  const btn = document.getElementById('overdue-filter-btn');
+  panel.classList.toggle('open');
+  btn.classList.toggle('active');
+}
+
+function clearOverdueFilters() {
+  ['f-overdue-test','f-overdue-client','f-overdue-status'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  const daysEl = document.getElementById('f-overdue-days'); if (daysEl) daysEl.value = '';
+  const qEl = document.getElementById('q-overdue'); if (qEl) qEl.value = '';
+  renderOverdue();
+}
+
+function downloadOverdueExcel() {
+  const data = getFilteredOverdue();
+  if (!data.length) { toast('No overdue data to export','error'); return; }
+
+  const headers = ['Sample Name','Test','Gen ID','Anderson ID','Client','TAT','Status','Days Overdue','Reviewer'];
+  const wsData = [headers];
+  data.forEach(r => {
+    wsData.push([
+      r.name||'', r.test||'', r.gen_id||'', r.and_id||'', r.client||'',
+      fmtDate(r.tat)==='—'?'':fmtDate(r.tat), getStatus(r), r._overdue_days, r.pri_rev||''
+    ]);
+  });
+
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+  // Auto-fit column widths
+  ws['!cols'] = headers.map((h,i) => {
+    let max = h.length;
+    wsData.forEach(row => { if (row[i] && String(row[i]).length > max) max = String(row[i]).length; });
+    return { wch: Math.min(max + 2, 40) };
+  });
+
+  XLSX.utils.book_append_sheet(wb, ws, 'TAT Overdue');
+
+  const today = new Date();
+  const fname = `TAT_Overdue_${today.getDate().toString().padStart(2,'0')}-${(today.getMonth()+1).toString().padStart(2,'0')}-${today.getFullYear()}.xlsx`;
+  XLSX.writeFile(wb, fname);
+  toast('Excel downloaded: ' + fname, 'ok');
 }
 
 // ================================================================
