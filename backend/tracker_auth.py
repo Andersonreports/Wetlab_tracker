@@ -56,7 +56,7 @@ GSHEET_ID = os.getenv(
     "TRACKER_GSHEET_ID",
     "1WToMt7-X3CJ5J2SeBbm9gf9sF6oq6PabECQBhHgS-gY",
 )
-GSHEET_GID = os.getenv("TRACKER_GSHEET_GID", "0")
+GSHEET_GID = os.getenv("TRACKER_GSHEET_GID", "1126267100")  # Sheet1 (3rd tab)
 
 router = APIRouter(prefix="/tracker")
 
