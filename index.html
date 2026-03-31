@@ -369,15 +369,15 @@
     }
     #qmodal-close:hover{background:var(--pb);color:var(--text)}
     #qmodal-body{display:flex;flex-direction:column;overflow:hidden;flex:1;padding:0}
-    .modal-filters-wrap{flex-shrink:0;padding-bottom:12px;border-bottom:1px solid var(--pb)}
+    .modal-filters-wrap{flex-shrink:0;padding-bottom:12px;border-bottom:1px solid var(--pb);background:var(--panel);position:sticky;top:0;z-index:20}
     .modal-table-wrap{overflow:auto;flex:1}
     #qmodal-body table{border-collapse:collapse;font-size:12.5px;min-width:max-content}
     #qmodal-body th{
       position:sticky;top:0;background:var(--panel);z-index:10;
-      padding:8px 14px;font-size:10.5px;font-weight:700;letter-spacing:.06em;
+      padding:8px 8px;font-size:10.5px;font-weight:700;letter-spacing:.06em;
       text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--pb);text-align:left;white-space:nowrap;
     }
-    #qmodal-body td{padding:8px 14px;border-bottom:1px solid var(--pb);vertical-align:middle;white-space:nowrap}
+    #qmodal-body td{padding:8px 8px;border-bottom:1px solid var(--pb);vertical-align:middle;white-space:nowrap}
     #qmodal-body tr:last-child td{border-bottom:none}
     #qmodal-body tr:hover td{background:rgba(99,102,241,.04)}
     .emp-card{cursor:pointer}
@@ -633,10 +633,7 @@
         <span class="s-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></span>
         <div class="s-lbl">Total</div>
         <div class="s-val" id="s-all">0</div>
-        <div class="s-sub" id="s-all-sub" style="margin-bottom:8px">Click to view all samples</div>
-        <select id="f-total-year" onchange="event.stopPropagation();onTotalYearChange()" style="width:100%;font-size:11px;padding:5px 8px;border-radius:6px;border:1px solid rgba(79,70,229,.3);background:rgba(79,70,229,.05);color:var(--pri);font-weight:600;outline:none;cursor:pointer">
-          <option value="">All Years</option>
-        </select>
+        <div class="s-sub" id="s-all-sub">Click to view all samples</div>
       </div>
       <div class="scard glass sc-yet"><span class="s-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 00-1.11-1.79l-1.78-.9A2 2 0 0115 10.76V6h1a2 2 0 000-4H8a2 2 0 000 4h1v4.76a2 2 0 01-1.11 1.79l-1.78.9A2 2 0 005 15.24z"/></svg></span><div class="s-lbl">Yet to Start</div><div class="s-val" id="s-yet">0</div><div class="s-sub">No reviewer assigned</div><div class="priority-btn" onclick="event.stopPropagation();openPriorityModal()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Priority</div></div>
       <div class="scard glass sc-ong"><span class="s-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span><div class="s-lbl">In Review</div><div class="s-val" id="s-ong">0</div><div class="s-sub" id="s-ong-sub">Assigned to reviewers</div></div>
@@ -1326,33 +1323,18 @@ function getRowYear(r) {
   return d ? d.getFullYear() : null;
 }
 
-function populateTotalYearFilter() {
-  const sel = document.getElementById('f-total-year');
-  if (!sel) return;
-  const curY = sel.value;
-  const years = [...new Set(rows.map(getRowYear).filter(Boolean))].sort((a,b)=>b-a);
-  sel.innerHTML = '<option value="">All Years</option>' +
-    years.map(y=>`<option value="${y}">${y}</option>`).join('');
-  if (years.map(String).includes(curY)) sel.value = curY;
-}
-
 function updateStatsByYear() {
-  const yr = document.getElementById('f-total-year')?.value || '';
-  const filtered = yr ? rows.filter(r => String(getRowYear(r)) === yr) : rows;
+  const filtered = rows;
 
   const yet = filtered.filter(r=>getStatus(r)==='Yet to Start');
   const ong = filtered.filter(r=>getStatus(r)==='Ongoing');
   const rel = filtered.filter(r=>getStatus(r)==='Released');
 
   document.getElementById('s-all').textContent = filtered.length;
+  document.getElementById('s-all-sub').textContent = 'Click to view all samples';
   document.getElementById('s-yet').textContent = yet.length;
   document.getElementById('s-ong').textContent = ong.length;
   document.getElementById('s-rel').textContent = rel.length;
-  document.getElementById('s-all-sub').textContent = yr ? `Samples in ${yr}` : 'Click to view all samples';
-}
-
-function onTotalYearChange() {
-  updateStatsByYear();
 }
 
 function refreshAll() {
@@ -1361,10 +1343,7 @@ function refreshAll() {
   const rel = rows.filter(r=>getStatus(r)==='Released');
   const n   = rows.length;
 
-  // populate year filter first (preserves selection on refresh)
-  populateTotalYearFilter();
-
-  // stat cards — respect year filter
+  // stat cards
   updateStatsByYear();
 
   // badges
@@ -1642,6 +1621,7 @@ function openAllSamplesModal() {
 
   const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const tatMonths = [...new Set(rows.map(r=>{ const d=parseDate(r.tat); return d?d.getMonth()+1:null; }).filter(Boolean))].sort((a,b)=>a-b);
+  const tatYears = [...new Set(rows.map(r=>{ const d=parseDate(r.tat); return d?d.getFullYear():null; }).filter(Boolean))].sort((a,b)=>b-a);
 
   const filterHtml = `
     <div style="padding:12px 22px 0;display:flex;flex-wrap:wrap;gap:8px;align-items:center">
@@ -1662,6 +1642,7 @@ function openAllSamplesModal() {
         <div class="rel-panel-item"><label>Analyst</label><select class="sel" id="all-f-analyst" onchange="filterAllSamples()">${'<option value="">All Analysts</option>'+analysts.map(a=>`<option value="${esc(a)}">${esc(a)}</option>`).join('')}</select></div>
         <div class="rel-panel-item"><label>Client</label><select class="sel" id="all-f-client" onchange="filterAllSamples()">${'<option value="">All Clients</option>'+clients.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('')}</select></div>
         <div class="rel-panel-item"><label>TAT Month</label><select class="sel" id="all-f-month" onchange="filterAllSamples()">${'<option value="">All Months</option>'+tatMonths.map(m=>`<option value="${m}">${MONTHS[m-1]}</option>`).join('')}</select></div>
+        <div class="rel-panel-item"><label>TAT Year</label><select class="sel" id="all-f-year" onchange="filterAllSamples()">${'<option value="">All Years</option>'+tatYears.map(y=>`<option value="${y}">${y}</option>`).join('')}</select></div>
       </div>
       <div class="rel-panel-actions"><button class="rel-clear-btn" onclick="clearAllSamplesFilters()">Clear All</button></div>
     </div>`;
@@ -1680,6 +1661,7 @@ function filterAllSamples() {
   const analyst = document.getElementById('all-f-analyst')?.value||'';
   const clientF = document.getElementById('all-f-client')?.value||'';
   const month   = document.getElementById('all-f-month')?.value||'';
+  const year    = document.getElementById('all-f-year')?.value||'';
 
   let data = rows;
   if (test)    data = data.filter(r=>r.test===test);
@@ -1687,6 +1669,7 @@ function filterAllSamples() {
   if (analyst) data = data.filter(r=>extractAnalysts(r.analyst_raw).includes(analyst));
   if (clientF) data = data.filter(r=>r.client===clientF);
   if (month)   data = data.filter(r=>{ const d=parseDate(r.tat); return d&&String(d.getMonth()+1)===month; });
+  if (year)    data = data.filter(r=>{ const d=parseDate(r.tat); return d&&String(d.getFullYear())===year; });
   if (q)       data = data.filter(r=>
     (r.name||'').toLowerCase().includes(q)||(r.test||'').toLowerCase().includes(q)||
     (r.gen_id||'').toLowerCase().includes(q)||(r.and_id||'').toLowerCase().includes(q)||
@@ -1699,7 +1682,7 @@ function filterAllSamples() {
 }
 
 function clearAllSamplesFilters() {
-  ['all-f-test','all-f-status','all-f-analyst','all-f-client','all-f-month'].forEach(id => {
+  ['all-f-test','all-f-status','all-f-analyst','all-f-client','all-f-month','all-f-year'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
   });
   const q = document.getElementById('all-q'); if (q) q.value = '';
