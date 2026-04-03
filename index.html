@@ -917,7 +917,7 @@ const COL_MAP = {
 
 function extractRunNumber(text) {
   if (!text) return null;
-  const m = text.match(/Run-?(\d+)/i);
+  const m = text.match(/Run[\s-]*(\d+)/i);
   return m ? parseInt(m[1], 10) : null;
 }
 
@@ -969,16 +969,22 @@ function mapRow(raw) {
 //  Yet to Start → pri_rev empty and no rel_date
 // ================================================================
 function getStatus(r) {
-  // Released logic with Run number consideration
   const run = parseInt(r.run_number || 0, 10);
   const isHidden = !!r.is_hidden;
   const hasRelDate = r.rel_date && r.rel_date !== '—' && r.rel_date !== '-' && String(r.rel_date).trim() !== '';
 
   let isReleased = false;
-  if (run > 0 && run <= 54) {
+  // Rule: Everything strictly before Run 54 is released
+  if (run > 0 && run < 54) {
+    isReleased = true;
+  } 
+  // Rule: Run 54 is released if hidden OR released date filled
+  else if (run === 54) {
     isReleased = isHidden || hasRelDate;
-  } else {
-    isReleased = hasRelDate; // Run > 54 or Run unknown
+  }
+  // Rule: Run > 54 (or unknown run) is only released if date filled
+  else {
+    isReleased = hasRelDate;
   }
 
   if (isReleased) return 'Released';
