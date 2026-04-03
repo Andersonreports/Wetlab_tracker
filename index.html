@@ -215,7 +215,7 @@
     .tbl-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--pb)}
     table{width:100%;border-collapse:collapse;font-size:12.5px;white-space:nowrap}
     thead th{
-      padding:11px 12px;text-align:left;font-size:10px;font-weight:700;
+      padding:8px 10px;text-align:left;font-size:10px;font-weight:700;
       text-transform:uppercase;letter-spacing:.7px;color:var(--muted);
       background:rgba(79,70,229,.04);border-bottom:1.5px solid var(--bdr);
       position:sticky;top:0;z-index:10;white-space:nowrap;
@@ -227,11 +227,12 @@
     tbody tr:nth-child(even){background:rgba(0,0,0,.012)}
     @media(prefers-color-scheme:dark){tbody tr:nth-child(even){background:rgba(255,255,255,.02)}}
     tbody tr:hover{background:rgba(79,70,229,.06)!important}
-    td{padding:10px 12px;vertical-align:middle;color:var(--text)}
+    td{padding:8px 10px;vertical-align:middle;color:var(--text)}
     td:first-child{text-align:center;color:var(--muted);font-size:11px;font-weight:600;width:44px}
     td.fw{font-weight:700}
     .muted-val{font-size:11px;color:var(--muted)}
     .long-cell{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .col-compact{width:1%;white-space:nowrap}
     /* column type styles */
     .col-mono{font-family:'SF Mono',Menlo,Consolas,monospace;font-size:11.5px;letter-spacing:.3px;color:var(--pri)}
     .col-date{color:var(--muted);font-size:12px;white-space:nowrap}
@@ -1656,9 +1657,11 @@ function buildModalTable(data, cols) {
   const ths = cols.map(c=>`<th>${COL_LABELS[c]||c}</th>`).join('');
   const trs = data.map(r=>`<tr>${cols.map(c=>{
     const v = r[c]||'';
-    if (c==='sno')     return `<td>${esc(v)||'—'}</td>`;
+    const cls = (c==='sno'||c==='run_text') ? ' class="col-compact"' : '';
+    if (c==='sno')     return `<td${cls}>${esc(v)||'—'}</td>`;
     if (c==='name')    return `<td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${esc(v)}">${esc(v)||'—'}</td>`;
     if (c==='gen_id'||c==='and_id') return `<td><span class="col-mono">${esc(v)||'—'}</span></td>`;
+    if (c==='run_text') return `<td${cls}>${esc(v)||'—'}</td>`;
     if (c==='analyst') return `<td>${v?`<span class="analyst-pill">${IC.user} ${esc(v)}</span>`:`<span class="muted-val">—</span>`}</td>`;
     if (c==='assign_date') return `<td class="col-date">${v?fmtDate(v):'<span class="muted-val">—</span>'}</td>`;
     if (c==='rel_date') return `<td class="col-date">${fmtRelDate(v, r)}</td>`;
@@ -1890,9 +1893,11 @@ function renderTable(key) {
   const ths = cfg.cols.map(c=>`<th>${COL_LABELS[c]||c}</th>`).join('');
   const trs = data.map(r=>`<tr>${cfg.cols.map(c=>{
     const v = r[c]||'';
-    if (c==='sno')     return `<td>${esc(v)||'—'}</td>`;
+    const cls = (c==='sno'||c==='run_text') ? ' class="col-compact"' : '';
+    if (c==='sno')     return `<td${cls}>${esc(v)||'—'}</td>`;
     if (c==='name')    return `<td class="col-name" title="${esc(v)}">${esc(v)||'—'}</td>`;
     if (c==='gen_id'||c==='and_id') return `<td><span class="col-mono">${esc(v)||'—'}</span></td>`;
+    if (c==='run_text') return `<td${cls}>${esc(v)||'—'}</td>`;
     if (c==='analyst') return `<td>${v?`<span class="analyst-pill">${IC.user} ${esc(v)}</span>`:`<span class="muted-val">—</span>`}</td>`;
     if (c==='analyst_raw') return `<td>${v?`<span class="analyst-pill">${IC.user} ${esc(v)}</span>`:`<span class="muted-val">—</span>`}</td>`;
     if (c==='analyst_txt') { const av = r.analyst||''; return `<td style="font-size:13px;color:var(--text)">${esc(av)||'<span class="muted-val">—</span>'}</td>`; }
@@ -2284,7 +2289,7 @@ function openPriorityModal() {
 
   const filterHtml = `<div class="pm-filters">
     <button class="pm-fbtn active" onclick="filterPriority('')">All (${_priorityRows.length})</button>
-    ${months.map(m => {
+    ${displayMonths.map(m => {
       const cnt = _priorityRows.filter(r => { const d = parseTatDate(r); return d && d.getMonth() === m; }).length;
       return `<button class="pm-fbtn" onclick="filterPriority('${m}')">${MONTHS[m]} (${cnt})</button>`;
     }).join('')}
