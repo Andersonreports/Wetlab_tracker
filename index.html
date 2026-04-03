@@ -373,14 +373,14 @@
     #qmodal-close:hover{background:var(--pb);color:var(--text)}
     #qmodal-body{display:flex;flex-direction:column;overflow:hidden;flex:1;padding:0}
     .modal-filters-wrap{flex-shrink:0;padding-bottom:12px;border-bottom:1px solid var(--pb);background:var(--panel);position:sticky;top:0;z-index:20}
-    .modal-table-wrap{overflow:auto;flex:1;width:fit-content;max-width:100%}
-    #qmodal-body table{border-collapse:collapse;font-size:12.5px;width:auto}
+    .modal-table-wrap{overflow:auto;flex:1;width:max-content;max-width:100%}
+    #qmodal-body table{border-collapse:collapse;font-size:12.5px;width:max-content}
     #qmodal-body th{
       position:sticky;top:0;background:var(--panel);z-index:10;
-      padding:8px 8px;font-size:10.5px;font-weight:700;letter-spacing:.06em;
+      padding:6px 8px;font-size:10.5px;font-weight:700;letter-spacing:.06em;
       text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--pb);text-align:left;white-space:nowrap;
     }
-    #qmodal-body td{padding:8px 8px;border-bottom:1px solid var(--pb);vertical-align:middle;white-space:nowrap}
+    #qmodal-body td{padding:6px 8px;border-bottom:1px solid var(--pb);vertical-align:middle;white-space:nowrap}
     #qmodal-body tr:last-child td{border-bottom:none}
     #qmodal-body tr:hover td{background:rgba(99,102,241,.04)}
     .emp-card{cursor:pointer}
