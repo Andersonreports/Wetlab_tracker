@@ -214,7 +214,8 @@
     /* ── TABLE ── */
     .tbl-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--pb);width:100%}
     table{border-collapse:collapse;font-size:12px;white-space:nowrap;width:100%;table-layout:auto;margin:0}
-    thead th, tbody td{padding:6px 10px;vertical-align:middle;text-align:left}
+    thead th, tbody td{padding:5px 8px;vertical-align:middle;text-align:left;width:1%;white-space:nowrap}
+    thead th:last-child, tbody td:last-child{width:auto}
     .col-tight{width:1px;white-space:nowrap}
     thead th{
       padding:8px 10px;text-align:left;font-size:10px;font-weight:700;
@@ -1652,24 +1653,20 @@ const MODAL_COLS = {
 
 function buildModalTable(data, cols) {
   if (!data.length) return `<div class="empty" style="padding:40px"><div class="ei">${IC.inbox}</div><p>No records</p></div>`;
-  const ths = cols.map(c=>{
-    const cls = ['name','client','remark'].includes(c) ? '' : ' class="col-tight"';
-    return `<th${cls}>${COL_LABELS[c]||c}</th>`;
-  }).join('');
+  const ths = cols.map(c=>`<th>${COL_LABELS[c]||c}</th>`).join('');
   const trs = data.map(r=>`<tr>${cols.map(c=>{
     const v = r[c]||'';
-    const cls = ['name','client','remark'].includes(c) ? '' : ' class="col-tight"';
-    if (c==='run_text') return `<td class="col-tight">${esc(v)||'—'}</td>`;
+    if (c==='run_text') return `<td>${esc(v)||'—'}</td>`;
     if (c==='name')    return `<td style="font-weight:600;color:var(--text)">${esc(v)||'—'}</td>`;
-    if (c==='gen_id'||c==='and_id') return `<td class="col-tight"><span class="col-mono">${esc(v)||'—'}</span></td>`;
-    if (c==='analyst') return `<td class="col-tight">${v?`<span class="analyst-pill">${IC.user} ${esc(v)}</span>`:`<span class="muted-val">—</span>`}</td>`;
-    if (c==='assign_date') return `<td class="col-date col-tight">${v?fmtDate(v):'<span class="muted-val">—</span>'}</td>`;
-    if (c==='rel_date') return `<td class="col-date col-tight">${fmtRelDate(v, r)}</td>`;
-    if (c==='ana_date') return `<td class="col-date col-tight">${fmtDate(v)}</td>`;
-    if (c==='tat') return `<td class="muted-val col-tight">${fmtDate(v)}</td>`;
-    if (c==='_status') { const st=getStatus(r); return `<td class="col-tight">${badgeHtml(st)}</td>`; }
-    if (c==='_rel') { const st=getStatus(r); return `<td class="col-date col-tight">${st==='Released'?fmtRelDate(r.rel_date,r):'<span class="muted-val">—</span>'}</td>`; }
-    return `<td${cls}>${esc(v)||'—'}</td>`;
+    if (c==='gen_id'||c==='and_id') return `<td><span class="col-mono">${esc(v)||'—'}</span></td>`;
+    if (c==='analyst') return `<td>${v?`<span class="analyst-pill">${IC.user} ${esc(v)}</span>`:`<span class="muted-val">—</span>`}</td>`;
+    if (c==='assign_date') return `<td class="col-date">${v?fmtDate(v):'<span class="muted-val">—</span>'}</td>`;
+    if (c==='rel_date') return `<td class="col-date">${fmtRelDate(v, r)}</td>`;
+    if (c==='ana_date') return `<td class="col-date">${fmtDate(v)}</td>`;
+    if (c==='tat') return `<td class="muted-val">${fmtDate(v)}</td>`;
+    if (c==='_status') { const st=getStatus(r); return `<td>${badgeHtml(st)}</td>`; }
+    if (c==='_rel') { const st=getStatus(r); return `<td class="col-date">${st==='Released'?fmtRelDate(r.rel_date,r):'<span class="muted-val">—</span>'}</td>`; }
+    return `<td>${esc(v)||'—'}</td>`;
   }).join('')}</tr>`).join('');
   return `<table><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table>`;
 }
@@ -1889,25 +1886,21 @@ function renderTable(key) {
     return;
   }
 
-  const ths = cfg.cols.map(c=>{
-    const cls = ['name','client','remark'].includes(c) ? '' : ' class="col-tight"';
-    return `<th${cls}>${COL_LABELS[c]||c}</th>`;
-  }).join('');
+  const ths = cfg.cols.map(c=>`<th>${COL_LABELS[c]||c}</th>`).join('');
   const trs = data.map(r=>`<tr>${cfg.cols.map(c=>{
     const v = r[c]||'';
-    const cls = ['name','client','remark'].includes(c) ? '' : ' class="col-tight"';
-    if (c==='run_text') return `<td class="col-tight">${esc(v)||'—'}</td>`;
-    if (c==='name')    return `<td class="col-name" style="font-weight:600;color:var(--text)">${esc(v)||'—'}</td>`;
-    if (c==='gen_id'||c==='and_id') return `<td class="col-tight"><span class="col-mono">${esc(v)||'—'}</span></td>`;
-    if (c==='analyst') return `<td class="col-tight">${v?`<span class="analyst-pill">${IC.user} ${esc(v)}</span>`:`<span class="muted-val">—</span>`}</td>`;
-    if (c==='analyst_raw') return `<td class="col-tight">${v?`<span class="analyst-pill">${IC.user} ${esc(v)}</span>`:`<span class="muted-val">—</span>`}</td>`;
-    if (c==='analyst_txt') { const av = r.analyst||''; return `<td class="col-tight" style="font-size:13px;color:var(--text)">${esc(av)||'<span class="muted-val">—</span>'}</td>`; }
-    if (c==='assign_date') return `<td class="col-date col-tight">${v?fmtDate(v):'<span class="muted-val">—</span>'}</td>`;
-    if (c==='rel_date') return `<td class="col-date col-tight">${fmtRelDate(v, r)}</td>`;
-    if (c==='ana_date') return `<td class="col-date col-tight">${fmtDate(v)}</td>`;
-    if (c==='pri_rev'||c==='final') return `<td class="col-tight">${v?`<span class="badge b-cmp">${IC.check} ${fmtDate(v)}</span>`:`<span class="muted-val">—</span>`}</td>`;
-    if (c==='tat') return `<td class="muted-val col-tight">${fmtDate(v)}</td>`;
-    return `<td${cls}>${esc(v)||'—'}</td>`;
+    if (c==='run_text') return `<td>${esc(v)||'—'}</td>`;
+    if (c==='name')    return `<td style="font-weight:600;color:var(--text)">${esc(v)||'—'}</td>`;
+    if (c==='gen_id'||c==='and_id') return `<td><span class="col-mono">${esc(v)||'—'}</span></td>`;
+    if (c==='analyst') return `<td>${v?`<span class="analyst-pill">${IC.user} ${esc(v)}</span>`:`<span class="muted-val">—</span>`}</td>`;
+    if (c==='analyst_raw') return `<td>${v?`<span class="analyst-pill">${IC.user} ${esc(v)}</span>`:`<span class="muted-val">—</span>`}</td>`;
+    if (c==='analyst_txt') { const av = r.analyst||''; return `<td style="font-size:13px;color:var(--text)">${esc(av)||'<span class="muted-val">—</span>'}</td>`; }
+    if (c==='assign_date') return `<td class="col-date">${v?fmtDate(v):'<span class="muted-val">—</span>'}</td>`;
+    if (c==='rel_date') return `<td class="col-date">${fmtRelDate(v, r)}</td>`;
+    if (c==='ana_date') return `<td class="col-date">${fmtDate(v)}</td>`;
+    if (c==='pri_rev'||c==='final') return `<td>${v?`<span class="badge b-cmp">${IC.check} ${fmtDate(v)}</span>`:`<span class="muted-val">—</span>`}</td>`;
+    if (c==='tat') return `<td class="muted-val">${fmtDate(v)}</td>`;
+    return `<td>${esc(v)||'—'}</td>`;
   }).join('')}</tr>`).join('');
 
   el.innerHTML=`<table><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table>`;
