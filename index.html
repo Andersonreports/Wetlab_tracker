@@ -974,8 +974,8 @@ function getStatus(r) {
   const hasRelDate = r.rel_date && r.rel_date !== '—' && r.rel_date !== '-' && String(r.rel_date).trim() !== '';
 
   let isReleased = false;
-  // Rule: Everything strictly before Run 54 is released
-  if (run > 0 && run < 54) {
+  // Rule: Everything strictly before Run 54 is released (including no run number)
+  if (run < 54) {
     isReleased = true;
   } 
   // Rule: Run 54 is released if hidden OR released date filled
