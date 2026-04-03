@@ -212,9 +212,9 @@
     .rel-clear-btn:hover{border-color:var(--danger);color:var(--danger)}
 
     /* ── TABLE ── */
-    .tbl-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--pb);width:100%}
-    table{border-collapse:collapse;font-size:12px;white-space:nowrap;width:100%;table-layout:auto;margin:0}
-    thead th, tbody td{padding:5px 8px;vertical-align:middle;text-align:left;width:1%;white-space:nowrap}
+    .tbl-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--pb);width:fit-content;max-width:100%}
+    table{border-collapse:collapse;font-size:12px;white-space:nowrap;width:auto;table-layout:auto;margin:0}
+    thead th, tbody td{padding:5px 8px;vertical-align:middle;text-align:left;white-space:nowrap}
     thead th:last-child, tbody td:last-child{width:auto}
     .col-tight{width:1px;white-space:nowrap}
     thead th{
@@ -233,7 +233,6 @@
     td.fw{font-weight:700}
     .muted-val{font-size:11px;color:var(--muted)}
     .long-cell{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .col-compact{width:1%;white-space:nowrap}
     /* column type styles */
     .col-mono{font-family:'SF Mono',Menlo,Consolas,monospace;font-size:11.5px;letter-spacing:.3px;color:var(--pri)}
     .col-date{color:var(--muted);font-size:12px;white-space:nowrap}
@@ -374,8 +373,8 @@
     #qmodal-close:hover{background:var(--pb);color:var(--text)}
     #qmodal-body{display:flex;flex-direction:column;overflow:hidden;flex:1;padding:0}
     .modal-filters-wrap{flex-shrink:0;padding-bottom:12px;border-bottom:1px solid var(--pb);background:var(--panel);position:sticky;top:0;z-index:20}
-    .modal-table-wrap{overflow:auto;flex:1}
-    #qmodal-body table{border-collapse:collapse;font-size:12.5px;min-width:max-content}
+    .modal-table-wrap{overflow:auto;flex:1;width:fit-content;max-width:100%}
+    #qmodal-body table{border-collapse:collapse;font-size:12.5px;width:auto}
     #qmodal-body th{
       position:sticky;top:0;background:var(--panel);z-index:10;
       padding:8px 8px;font-size:10.5px;font-weight:700;letter-spacing:.06em;
