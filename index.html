@@ -222,7 +222,6 @@
       background:rgba(79,70,229,.04);border-bottom:1.5px solid var(--bdr);
       position:sticky;top:0;z-index:10;white-space:nowrap;
     }
-    thead th:first-child{width:44px;text-align:center}
     @media(prefers-color-scheme:dark){thead th{background:rgba(79,70,229,.08)}}
     tbody tr{transition:var(--tr);border-bottom:1px solid var(--bdr)}
     tbody tr:last-child{border-bottom:none}
@@ -230,7 +229,6 @@
     @media(prefers-color-scheme:dark){tbody tr:nth-child(even){background:rgba(255,255,255,.02)}}
     tbody tr:hover{background:rgba(79,70,229,.06)!important}
     td{vertical-align:middle;color:var(--text)}
-    td:first-child{text-align:center;color:var(--muted);font-size:10.5px;font-weight:600;width:40px}
     td.fw{font-weight:700}
     .muted-val{font-size:11px;color:var(--muted)}
     .long-cell{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -1655,13 +1653,12 @@ const MODAL_COLS = {
 function buildModalTable(data, cols) {
   if (!data.length) return `<div class="empty" style="padding:40px"><div class="ei">${IC.inbox}</div><p>No records</p></div>`;
   const ths = cols.map(c=>{
-    const cls = ['sno','run_text','gen_id','and_id','tat','assign_date','rel_date','ana_date'].includes(c) ? ' class="col-tight"' : '';
+    const cls = ['name','client','remark'].includes(c) ? '' : ' class="col-tight"';
     return `<th${cls}>${COL_LABELS[c]||c}</th>`;
   }).join('');
   const trs = data.map(r=>`<tr>${cols.map(c=>{
     const v = r[c]||'';
-    const cls = ['sno','run_text','gen_id','and_id','tat','assign_date','rel_date','ana_date'].includes(c) ? ' class="col-tight"' : '';
-    if (c==='sno')     return `<td class="col-tight">${esc(v)||'—'}</td>`;
+    const cls = ['name','client','remark'].includes(c) ? '' : ' class="col-tight"';
     if (c==='run_text') return `<td class="col-tight">${esc(v)||'—'}</td>`;
     if (c==='name')    return `<td style="font-weight:600;color:var(--text)">${esc(v)||'—'}</td>`;
     if (c==='gen_id'||c==='and_id') return `<td class="col-tight"><span class="col-mono">${esc(v)||'—'}</span></td>`;
@@ -1672,7 +1669,7 @@ function buildModalTable(data, cols) {
     if (c==='tat') return `<td class="muted-val col-tight">${fmtDate(v)}</td>`;
     if (c==='_status') { const st=getStatus(r); return `<td class="col-tight">${badgeHtml(st)}</td>`; }
     if (c==='_rel') { const st=getStatus(r); return `<td class="col-date col-tight">${st==='Released'?fmtRelDate(r.rel_date,r):'<span class="muted-val">—</span>'}</td>`; }
-    return `<td>${esc(v)||'—'}</td>`;
+    return `<td${cls}>${esc(v)||'—'}</td>`;
   }).join('')}</tr>`).join('');
   return `<table><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table>`;
 }
@@ -1680,7 +1677,7 @@ function buildModalTable(data, cols) {
 // ================================================================
 //  ALL SAMPLES MODAL — with search + filters
 // ================================================================
-const ALL_COLS = ['sno','run_text','name','gen_id','and_id', 'client','test', 'tat', '_status','_rel'];
+const ALL_COLS = ['run_text','name','gen_id','and_id', 'client','test', 'tat', '_status','_rel'];
 let _allModalData = [];
 
 function openAllSamplesModal() {
@@ -1819,15 +1816,15 @@ function renderQuickCards(containerId, data, status) {
 // ================================================================
 const TABLE_CFG = {
   yet:       { status:'Yet to Start', q:'q-yet',  test:'f-yet-test',  analyst:null,              tat:null,  tatMonth:'f-yet-month', tatYear:'f-yet-year', tatDate:'f-yet-date',
-               cols:['sno','name','run_text','test','gen_id','and_id','client','tat','rep_exp'] },
+               cols:['name','run_text','test','gen_id','and_id','client','tat','rep_exp'] },
   assigned:  { status:'Ongoing',      q:'q-asgn', test:'f-asgn-test', reviewer:'f-asgn-employee', tat:'f-asgn-tat', relMonth:null,          relYear:null,
-               cols:['sno','pri_rev','analyst','assign_date','name','run_text','test','gen_id','and_id','client','tat','ana_date','remark'] },
+               cols:['pri_rev','analyst','assign_date','name','run_text','test','gen_id','and_id','client','tat','ana_date','remark'] },
   released:  { status:'Released',     q:'q-rel',  test:'f-rel-test',  analyst:'f-rel-analyst',  client:'f-rel-client', tat:null,  relMonth:'f-rel-month', relYear:'f-rel-year', relDate:'f-rel-date',
                cols:['run_text','analyst_txt','name','test','gen_id','and_id', 'client','tat', 'final','rel_date'] },
 };
 
 const COL_LABELS = {
-  sno:'#', name:'Sample Name', test:'Test', gen_id:'ID', and_id:'And. ID', run_text: 'Run',
+  name:'Sample Name', test:'Test', gen_id:'ID', and_id:'And. ID', run_text: 'Run',
   client:'Client', tat:'TAT', rep_exp:'Repeat Exp',
   analyst:'Assigned To', analyst_raw:'Assigned To', analyst_txt:'Analyst', assign_date:'Assigned Date', ana_date:'Analyze Date', pri_rev:'Primary Reviewer',
   final:'Final Review', remark:'Remark', rel_date:'Release Date', history:'History',
@@ -1893,13 +1890,12 @@ function renderTable(key) {
   }
 
   const ths = cfg.cols.map(c=>{
-    const cls = ['sno','run_text','gen_id','and_id','tat','assign_date','rel_date','ana_date'].includes(c) ? ' class="col-tight"' : '';
+    const cls = ['name','client','remark'].includes(c) ? '' : ' class="col-tight"';
     return `<th${cls}>${COL_LABELS[c]||c}</th>`;
   }).join('');
   const trs = data.map(r=>`<tr>${cfg.cols.map(c=>{
     const v = r[c]||'';
-    const cls = ['sno','run_text','gen_id','and_id','tat','assign_date','rel_date','ana_date'].includes(c) ? ' class="col-tight"' : '';
-    if (c==='sno')     return `<td class="col-tight">${esc(v)||'—'}</td>`;
+    const cls = ['name','client','remark'].includes(c) ? '' : ' class="col-tight"';
     if (c==='run_text') return `<td class="col-tight">${esc(v)||'—'}</td>`;
     if (c==='name')    return `<td class="col-name" style="font-weight:600;color:var(--text)">${esc(v)||'—'}</td>`;
     if (c==='gen_id'||c==='and_id') return `<td class="col-tight"><span class="col-mono">${esc(v)||'—'}</span></td>`;
@@ -1911,7 +1907,7 @@ function renderTable(key) {
     if (c==='ana_date') return `<td class="col-date col-tight">${fmtDate(v)}</td>`;
     if (c==='pri_rev'||c==='final') return `<td class="col-tight">${v?`<span class="badge b-cmp">${IC.check} ${fmtDate(v)}</span>`:`<span class="muted-val">—</span>`}</td>`;
     if (c==='tat') return `<td class="muted-val col-tight">${fmtDate(v)}</td>`;
-    return `<td>${esc(v)||'—'}</td>`;
+    return `<td${cls}>${esc(v)||'—'}</td>`;
   }).join('')}</tr>`).join('');
 
   el.innerHTML=`<table><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table>`;
