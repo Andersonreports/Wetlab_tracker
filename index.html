@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sample Tracker – Wet Lab</title>
+  <title>Anderson CMC-ONCO Tracker</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -425,7 +425,7 @@
   <div class="sidebar-header">
     <h1>
       <i data-lucide="microscope"></i>
-      Wet Lab Tracker
+      Anderson CMC-ONCO Tracker
     </h1>
   </div>
 
@@ -460,14 +460,14 @@
     </li>
     <li class="nav-item">
       <button class="nav-btn" data-view="Tertiary Analysis">
-        <span class="label"><i data-lucide="bar-chart-3"></i> Analysis</span>
+        <span class="label"><i data-lucide="bar-chart-3"></i> Tertiary Analysis</span>
       </button>
     </li>
   </ul>
 
   <div class="sidebar-footer">
-    <p>© 2026 Anderson Lab</p>
-    <p>Mint Theme · v1.2.0</p>
+    <p>© 2026 Anderson CMC-ONCO</p>
+    <p>Mint Theme · v1.3.0</p>
   </div>
 </aside>
 
@@ -527,10 +527,10 @@
   // --- CONFIG ---
   const VIEWS = {
     'Total': null,
-    'Sample Track': ["Anderson ID", "Sample Number", "Remarks", "Name", "Test Name", "Client", "Sample Details", "Received Date", "TRF Hardcopy", "TRF-Freedom"],
-    'DNA Status': ["DNA Extraction", "DNA Conc. (Qubit)", "DNA Conc. (Nanodrop)", "A260/280", "260/230"],
-    'Library Preparation': ["MCC Results", "Samples Received After Extraction", "Date of Library Prep", "Kit Name", "Pool ID", "Date of Sequencing", "Date of Data Transfer", "Remarks"],
-    'Tertiary Analysis': ["Raw Data Received", "FASTQC/FASTP (Q30)", "Secondary Analysis", "Gender Check", "Report Release", "Remark"]
+    'Sample Track': ["Anderson ID", "Sample Number", "Test", "Client", "Received Date", "Sample Type"],
+    'DNA Status': ["DNA Conc", "RNA Conc", "Sample QC Sharing Date", "Name of Kit"],
+    'Library Preparation': ["Library Concentration", "Library QC Sharing Date", "Date of Sequencing"],
+    'Tertiary Analysis': ["Date of Transferring Data", "Remarks"]
   };
 
   // State
