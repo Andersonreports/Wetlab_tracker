@@ -525,6 +525,18 @@
 
 <script>
   // --- CONFIG ---
+  const FILTER_CONFIG = [
+    { label: "Anderson ID",              col: "Anderson ID",              type: "text" },
+    { label: "Sample Number",            col: "Sample Number",            type: "text" },
+    { label: "Test",                     col: "Test",                     type: "dropdown" },
+    { label: "Client",                   col: "Client",                   type: "dropdown" },
+    { label: "Received Date",            col: "Received Date",            type: "date" },
+    { label: "Sample QC Sharing Date",   col: "Sample QC Sharing Date",   type: "date" },
+    { label: "Library QC Sharing Date",  col: "Library QC Sharing Date",  type: "date" },
+    { label: "Date of Sequencing",       col: "Date of Sequencing",       type: "date" },
+    { label: "Date of Transferring Data",col: "Date of Transferring Data",type: "date" }
+  ];
+
   const VIEWS = {
     'Total': null,
     'Sample Track': ["Anderson ID", "Sample Number", "Test", "Client", "Received Date", "Sample Type"],
@@ -669,23 +681,39 @@
 
   function generateFilterUI() {
     if (rawData.length === 0) return;
-    const requestedCols = VIEWS[currentView] || Object.keys(rawData[0]);
-    
+
     let html = '';
-    requestedCols.forEach(req => {
-      const actual = headerMap[normalize(req)];
-      if (actual || currentView === 'Total') {
-        const colKey = actual || req;
-        const isDate = colKey.toLowerCase().includes('date');
+    FILTER_CONFIG.forEach(({ label, col, type }) => {
+      const actualCol = headerMap[normalize(col)];
+      if (!actualCol) return; // column not present in this Excel, skip
+
+      if (type === 'dropdown') {
+        const unique = [...new Set(rawData.map(r => String(r[actualCol] || '')).filter(v => v))].sort();
+        const opts = unique.map(v => `<option value="${v}"${activeFilters[actualCol] === v ? ' selected' : ''}>${v}</option>`).join('');
         html += `
           <div class="filter-group">
-            <label>${req}</label>
-            <input type="${isDate ? 'date' : 'text'}" data-col="${colKey}" value="${activeFilters[colKey] || ''}">
-          </div>
-        `;
+            <label>${label}</label>
+            <select data-col="${actualCol}">
+              <option value="">— All —</option>
+              ${opts}
+            </select>
+          </div>`;
+      } else if (type === 'date') {
+        html += `
+          <div class="filter-group">
+            <label>${label}</label>
+            <input type="date" data-col="${actualCol}" value="${activeFilters[actualCol] || ''}">
+          </div>`;
+      } else {
+        html += `
+          <div class="filter-group">
+            <label>${label}</label>
+            <input type="text" data-col="${actualCol}" placeholder="Search…" value="${activeFilters[actualCol] || ''}">
+          </div>`;
       }
     });
-    filterInputs.innerHTML = html;
+
+    filterInputs.innerHTML = html || '<p style="color:var(--text-muted)">No filter columns found in this file.</p>';
   }
 
   // --- EVENTS ---
@@ -703,9 +731,9 @@
   document.getElementById('btn-close-filter').addEventListener('click', () => filterDrawer.classList.remove('open'));
   
   document.getElementById('btn-apply-filters').addEventListener('click', () => {
-    filterInputs.querySelectorAll('input').forEach(i => {
-      if (i.value.trim()) activeFilters[i.dataset.col] = i.value.trim();
-      else delete activeFilters[i.dataset.col];
+    filterInputs.querySelectorAll('input, select').forEach(el => {
+      if (el.value.trim()) activeFilters[el.dataset.col] = el.value.trim();
+      else delete activeFilters[el.dataset.col];
     });
     renderTable();
     filterDrawer.classList.remove('open');
@@ -713,7 +741,7 @@
 
   document.getElementById('btn-reset-filters').addEventListener('click', () => {
     activeFilters = {};
-    filterInputs.querySelectorAll('input').forEach(i => i.value = '');
+    filterInputs.querySelectorAll('input, select').forEach(el => el.value = '');
     renderTable();
   });
 
