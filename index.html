@@ -441,11 +441,11 @@
   </div>
 
   <div class="upload-section">
-    <input type="file" id="excel-file-input" accept=".xlsx, .xls" style="display: none;">
-    <button class="btn-upload-trigger" id="btn-upload">
-      <i data-lucide="upload-cloud"></i>
-      Upload Excel
+    <button class="btn-upload-trigger" id="btn-sync">
+      <i data-lucide="refresh-cw"></i>
+      Sync Now
     </button>
+    <div style="margin-top:10px; font-size:0.72rem; color:var(--text-muted); text-align:center;" id="next-refresh-label">Auto-refresh every 1 min</div>
   </div>
 
   <ul class="nav-list">
@@ -535,7 +535,14 @@
 </div>
 
 <script>
-  // --- CONFIG ---
+  // --- LIVE SHEET CONFIG ---
+  const SHEET_CONFIG = {
+    id:  '1i0YEABaahPoH79RpvGl-2AdyrHsnaXM_9L3_vMiSnEU',
+    gid: '0'
+  };
+  const REFRESH_INTERVAL_MS = 60 * 1000; // 1 minute
+
+  // --- FILTER CONFIG ---
   const FILTER_CONFIG = [
     { label: "Anderson ID",              col: "Anderson ID",              type: "text" },
     { label: "Sample Number",            col: "Sample Number",            type: "text" },
@@ -590,50 +597,44 @@
 
   lucide.createIcons();
 
-  // --- FILE HANDLING ---
-  document.getElementById('btn-upload').addEventListener('click', () => fileInput.click());
+  // --- LIVE SHEET FETCH ---
+  async function loadLiveSheet(showLoader = true) {
+    if (showLoader) loader.style.display = 'flex';
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_CONFIG.id}/export?format=csv&gid=${SHEET_CONFIG.gid}`;
+    try {
+      const resp = await fetch(url);
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const text = await resp.text();
 
-  fileInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+      const workbook = XLSX.read(text, { type: 'string' });
+      const firstSheet = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[firstSheet];
+      rawData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
 
-    loader.style.display = 'flex';
-    const reader = new FileReader();
-
-    reader.onload = (evt) => {
-      try {
-        const data = evt.target.result;
-        const workbook = XLSX.read(data, { type: 'binary' });
-        const firstSheet = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[firstSheet];
-        rawData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
-
-        // Build Smart Header Map
-        headerMap = {};
-        if (rawData.length > 0) {
-          Object.keys(rawData[0]).forEach(key => {
-            headerMap[normalize(key)] = key;
-          });
-        }
-
-        statusDot.classList.add('active');
-        syncTime.textContent = `Last uploaded: ${new Date().toLocaleTimeString()}`;
-        renderApp();
-      } catch (err) {
-        alert("Error parsing Excel file. Please ensure it is a valid .xlsx or .xls file.");
-        console.error(err);
-      } finally {
-        loader.style.display = 'none';
+      headerMap = {};
+      if (rawData.length > 0) {
+        Object.keys(rawData[0]).forEach(key => {
+          headerMap[normalize(key)] = key;
+        });
       }
-    };
 
-    reader.onerror = () => {
-      alert("Error reading file.");
-      loader.style.display = 'none';
-    };
+      statusDot.classList.add('active');
+      syncTime.textContent = `Synced: ${new Date().toLocaleTimeString()}`;
+      renderApp();
+    } catch (err) {
+      statusDot.classList.remove('active');
+      syncTime.textContent = 'Sync failed';
+      console.error('Live sheet error:', err);
+    } finally {
+      if (showLoader) loader.style.display = 'none';
+    }
+  }
 
-    reader.readAsBinaryString(file);
-  });
+  // Auto-refresh every 1 minute
+  loadLiveSheet();
+  setInterval(() => loadLiveSheet(false), REFRESH_INTERVAL_MS);
+
+  document.getElementById('btn-sync').addEventListener('click', () => loadLiveSheet());
 
   function renderApp() {
     renderTable();
