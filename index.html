@@ -212,8 +212,11 @@
       background-color: var(--accent);
       color: #fff;
       border: none;
-      padding: 0 20px;
-      height: 100%;
+      margin: 6px 8px 6px 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      flex-shrink: 0;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -223,6 +226,12 @@
 
     .btn-search-exec:hover {
       background-color: var(--accent-hover);
+      transform: scale(1.08);
+    }
+
+    .btn-search-exec svg {
+      width: 15px;
+      height: 15px;
     }
 
     .sync-status {
