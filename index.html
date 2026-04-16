@@ -534,13 +534,16 @@
     { label: "Sample QC Sharing Date",   col: "Sample QC Sharing Date",   type: "date" },
     { label: "Library QC Sharing Date",  col: "Library QC Sharing Date",  type: "date" },
     { label: "Date of Sequencing",       col: "Date of Sequencing",       type: "date" },
-    { label: "Date of Transferring Data",col: "Date of Transferring Data",type: "date" }
+    { label: "Date of Transferring Data",col: "Date of Transferring Data",type: "date" },
+    { label: "DNA Conc (Qubit)",         col: "DNA Conc (Qubit)",         type: "text" },
+    { label: "RNA Conc (Qubit)",         col: "RNA Conc (Qubit)",         type: "text" },
+    { label: "Name of the Kit",          col: "Name of the Kit",          type: "dropdown" }
   ];
 
   const VIEWS = {
     'Total': null,
     'Sample Track': ["Anderson ID", "Sample Number", "Test", "Client", "Received Date", "Sample Type"],
-    'DNA Status': ["DNA Conc", "RNA Conc", "Sample QC Sharing Date", "Name of Kit"],
+    'DNA Status': ["DNA Conc (Qubit)", "RNA Conc (Qubit)", "Sample QC Sharing Date", "Name of the Kit"],
     'Library Preparation': ["Library Concentration", "Library QC Sharing Date", "Date of Sequencing"],
     'Tertiary Analysis': ["Date of Transferring Data", "Remarks"]
   };
