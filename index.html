@@ -560,10 +560,10 @@
 
   const VIEWS = {
     'Total': null,
-    'Sample Track': ["Anderson ID", "Sample Number", "Test", "Client", "Received Date", "Sample Type"],
-    'DNA Status': ["DNA Conc (Qubit)", "RNA Conc (Qubit)", "Sample QC Sharing Date", "Name of the Kit"],
-    'Library Preparation': ["Library Concentration", "Library QC Sharing Date", "Date of Sequencing"],
-    'Tertiary Analysis': ["Date of Transferring Data", "Remarks"]
+    'Sample Track': ["Sample Number", "Anderson ID", "Test", "Client", "Received Date", "Sample Type"],
+    'DNA Status': ["Sample Number", "DNA Conc (Qubit)", "RNA Conc (Qubit)", "Sample QC Sharing Date", "Name of the Kit"],
+    'Library Preparation': ["Sample Number", "Library Concentration", "Library QC Sharing Date", "Date of Sequencing"],
+    'Tertiary Analysis': ["Sample Number", "Date of Transferring Data", "Remarks"]
   };
 
   // State
@@ -654,12 +654,35 @@
     return data;
   }
 
+  // Reorder columns so "Sample Number" is first (or after S.No if present)
+  function ensureSampleNumberFirst(colList) {
+    const sampleNumNorm = normalize('Sample Number');
+    const snoNorm = normalize('S.No');
+
+    const sampleIdx = colList.findIndex(c => normalize(c) === sampleNumNorm);
+    if (sampleIdx <= 0) return colList; // already first or not present
+
+    const reordered = colList.filter((_, i) => i !== sampleIdx);
+    // Check if S.No (or similar) is the first column
+    const hasSno = reordered.length > 0 &&
+      (normalize(reordered[0]) === snoNorm ||
+       normalize(reordered[0]).startsWith('sno') ||
+       normalize(reordered[0]) === 'slno' ||
+       normalize(reordered[0]) === 'serialnumber');
+
+    const insertAt = hasSno ? 1 : 0;
+    reordered.splice(insertAt, 0, colList[sampleIdx]);
+    return reordered;
+  }
+
   function renderTable() {
     const data = getFilteredData();
     if (rawData.length === 0) return;
 
     // Map internal requested columns to actual Excel headers
-    const requestedCols = VIEWS[currentView] || Object.keys(rawData[0]);
+    let requestedCols = VIEWS[currentView] || Object.keys(rawData[0]);
+    // Ensure Sample Number is the first column (or after S.No)
+    requestedCols = ensureSampleNumberFirst(requestedCols);
     const actualCols = [];
     const displayNames = [];
 
