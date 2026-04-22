@@ -544,6 +544,7 @@
 
   // --- FILTER CONFIG ---
   const FILTER_CONFIG = [
+    { label: "Batch",                    col: "Batch",                    type: "dropdown" },
     { label: "Anderson ID",              col: "Anderson ID",              type: "text" },
     { label: "Sample Number",            col: "Sample Number",            type: "text" },
     { label: "Test",                     col: "Test",                     type: "dropdown" },
@@ -610,6 +611,18 @@
       const firstSheet = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[firstSheet];
       rawData = XLSX.utils.sheet_to_json(worksheet, { defval: "", raw: false });
+
+      // Fill down merged-cell columns (Batch, etc.) — copy last non-empty value downward
+      if (rawData.length > 0) {
+        const fillCols = Object.keys(rawData[0]).filter(k => normalize(k).includes('batch'));
+        fillCols.forEach(col => {
+          let last = '';
+          rawData.forEach(row => {
+            if (String(row[col]).trim() !== '') last = row[col];
+            else if (last) row[col] = last;
+          });
+        });
+      }
 
       headerMap = {};
       if (rawData.length > 0) {
