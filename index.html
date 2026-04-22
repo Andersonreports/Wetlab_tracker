@@ -600,16 +600,16 @@
   // --- LIVE SHEET FETCH ---
   async function loadLiveSheet(showLoader = true) {
     if (showLoader) loader.style.display = 'flex';
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_CONFIG.id}/export?format=csv&gid=${SHEET_CONFIG.gid}`;
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_CONFIG.id}/export?format=xlsx&gid=${SHEET_CONFIG.gid}`;
     try {
       const resp = await fetch(url);
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-      const text = await resp.text();
+      const buffer = await resp.arrayBuffer();
 
-      const workbook = XLSX.read(text, { type: 'string' });
+      const workbook = XLSX.read(new Uint8Array(buffer), { type: 'array', cellDates: true });
       const firstSheet = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[firstSheet];
-      rawData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+      rawData = XLSX.utils.sheet_to_json(worksheet, { defval: "", raw: false });
 
       headerMap = {};
       if (rawData.length > 0) {
