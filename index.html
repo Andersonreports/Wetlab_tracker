@@ -700,12 +700,12 @@
     const displayNames = [];
 
     requestedCols.forEach(req => {
+      if (normalize(req).includes('batch')) return; // hidden — available in filter only
       const actual = headerMap[normalize(req)];
       if (actual) {
         actualCols.push(actual);
-        displayNames.push(req); // Keep requested name for display consistency
+        displayNames.push(req);
       } else if (currentView === 'Total') {
-        // For Total view, just use everything as is if not in map
         actualCols.push(req);
         displayNames.push(req);
       }
