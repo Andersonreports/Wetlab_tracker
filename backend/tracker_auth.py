@@ -54,9 +54,9 @@ COOKIE_NAME  = "tracker_session"
 # Google Sheet config
 GSHEET_ID = os.getenv(
     "TRACKER_GSHEET_ID",
-    "1WToMt7-X3CJ5J2SeBbm9gf9sF6oq6PabECQBhHgS-gY",
+    "1rWGkrrKMMD6NnRvj6ZIfUxNE-VA9aUQYRmseSnnspDs",
 )
-GSHEET_GID = os.getenv("TRACKER_GSHEET_GID", "1126267100")  # Sheet1 (3rd tab)
+GSHEET_GID = os.getenv("TRACKER_GSHEET_GID", "1767152443")  # Active sheet tab
 
 router = APIRouter(prefix="/tracker")
 
